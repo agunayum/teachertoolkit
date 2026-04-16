@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Odd One Out Builder</title>
+    <style>
+        :root {
+            --bg: #f7f1e6;
+            --panel: #fffaf2;
+            --ink: #1f2937;
+            --muted: #6b7280;
+            --line: #e5dccf;
+            --accent: #a94f2d;
+            --accent-dark: #8a3f22;
+            --soft: #f1e2d2;
+            --chip: #fff;
+            --shadow: 0 14px 40px rgba(92, 66, 31, 0.12);
+            --radius: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family: "Minion Pro", MinionPro, Georgia, "Times New Roman", serif;
+            color: var(--ink);
+            background: linear-gradient(180deg, #fbf7f0 0%, var(--bg) 100%);
+        }
+
+        .page {
+            width: min(1180px, calc(100% - 24px));
+            margin: 0 auto;
+            padding: 20px 0 32px;
+        }
+
+        .hero {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 18px;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            font: 700 12px/1.2 Arial, sans-serif;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        h1, h2 {
+            margin: 0;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            line-height: 1;
+        }
+
+        .subtext {
+            margin: 14px 0 0;
+            font: 16px/1.6 Arial, sans-serif;
+            color: var(--muted);
+            max-width: 760px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(320px, 410px) minmax(0, 1fr);
+            gap: 18px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 22px;
+        }
+
+        .panel-title {
+            margin-bottom: 8px;
+            font-size: 1.6rem;
+        }
+
+        .panel-copy {
+            margin: 0 0 18px;
+            font: 14px/1.5 Arial, sans-serif;
+            color: var(--muted);
+        }
+
+        .field {
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .field-label {
+            display: block;
+            margin-bottom: 8px;
+            font: 700 14px/1.2 Arial, sans-serif;
+        }
+
+        textarea,
+        input,
+        select {
+            width: 100%;
+            border: 1px solid #d8cdbd;
+            border-radius: 12px;
+            padding: 12px 14px;
+            color: var(--ink);
+            background: #fff;
+            font: 15px/1.5 Arial, sans-serif;
+        }
+
+        textarea {
+            min-height: 220px;
+            resize: vertical;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .checks {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .check {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font: 14px/1.4 Arial, sans-serif;
+            color: var(--muted);
+        }
+
+        .check input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        button {
+            border: 1px solid transparent;
+            border-radius: 999px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font: 700 14px/1.2 Arial, sans-serif;
+        }
+
+        .primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .primary:hover {
+            background: var(--accent-dark);
+        }
+
+        .secondary,
+        .ghost {
+            background: #fff;
+            color: var(--ink);
+            border-color: #d8cdbd;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+        }
+
+        .summary span {
+            display: block;
+            font: 700 11px/1.2 Arial, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .summary strong {
+            font: 700 14px/1.4 Arial, sans-serif;
+        }
+
+        .board-top {
+            display: flex;
+            justify-content: space-between;
+            gap: 14px;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .prompt {
+            margin: 0 0 16px;
+            font: 15px/1.5 Arial, sans-serif;
+            color: var(--muted);
+        }
+
+        .status {
+            margin-bottom: 14px;
+            padding: 10px 12px;
+            border-radius: 12px;
+            background: var(--soft);
+            font: 14px/1.4 Arial, sans-serif;
+        }
+
+        .empty {
+            padding: 36px 18px;
+            text-align: center;
+            border: 1px dashed #d8cdbd;
+            border-radius: 18px;
+            font: 15px/1.5 Arial, sans-serif;
+            color: var(--muted);
+        }
+
+        .rounds {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+        }
+
+        .round {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: #fff;
+            padding: 16px;
+        }
+
+        .round-head {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .round-number {
+            font: 700 12px/1.2 Arial, sans-serif;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .tag {
+            border-radius: 999px;
+            background: var(--soft);
+            padding: 5px 10px;
+            font: 700 12px/1.2 Arial, sans-serif;
+            color: var(--accent-dark);
+        }
+
+        .words {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .word {
+            display: inline-block;
+            padding: 10px 12px;
+            border: 1px solid #e7ddcf;
+            border-radius: 999px;
+            background: var(--chip);
+            font: 700 15px/1.2 Arial, sans-serif;
+        }
+
+        .round-copy,
+        .note {
+            margin: 0;
+            font: 14px/1.5 Arial, sans-serif;
+            color: var(--muted);
+        }
+
+        .note {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+            color: var(--ink);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .grid,
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .board-top {
+                flex-direction: column;
+            }
+        }
+
+        @media print {
+            @page {
+                size: A4 portrait;
+                margin: 12mm;
+            }
+
+            .hero,
+            .controls,
+            .status,
+            .ghost,
+            .secondary,
+            .primary {
+                display: none !important;
+            }
+
+            body {
+                background: #fff;
+                margin: 0;
+            }
+
+            .page {
+                width: 100%;
+                max-width: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .panel {
+                box-shadow: none;
+                border: none;
+                padding: 0;
+            }
+
+            .rounds {
+                grid-template-columns: 1fr 1fr;
+                gap: 10mm;
+            }
+
+            .round {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <p class="eyebrow">Classroom Tool</p>
+            <h1>Odd One Out Builder</h1>
+            <p class="subtext">Paste your vocabulary list, choose a few settings, and generate simple low-interaction rounds you can use immediately.</p>
+        </section>
+
+        <section class="layout">
+            <div class="panel controls">
+                <h2 class="panel-title">Build Your Game</h2>
+                <p class="panel-copy">Put each round on its own line, and separate words in the same round with commas.</p>
+
+                <label class="field">
+                    <span class="field-label">Words</span>
+                    <textarea id="wordInput" placeholder="equivocal, ambiguous, explicit
+anticipate, expect, antipathy, project
+engender, elicit, generate, repudiate
+ameliorate, assuage, mitigate, exacerbate"></textarea>
+                </label>
+
+                <div class="grid">
+                    <label class="field">
+                        <span class="field-label">Game Title</span>
+                        <input id="gameTitle" type="text" value="Odd One Out" maxlength="60">
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Words Per Round</span>
+                        <select id="groupSize">
+                            <option value="0" selected>Use the number of words on each line</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Rounds</span>
+                        <input id="roundCount" type="number" min="1" max="30" value="8">
+                    </label>
+
+                    <label class="field">
+                        <span class="field-label">Prompt</span>
+                        <input id="studentPrompt" type="text" value="Which word is the odd one out, and why?" maxlength="120">
+                    </label>
+                </div>
+
+                <div class="checks">
+                    <label class="check">
+                        <input id="allowReuse" type="checkbox" checked>
+                        <span>Ignore my lines and auto-build rounds from one big word list</span>
+                    </label>
+                    <label class="check">
+                        <input id="shuffleWords" type="checkbox" checked>
+                        <span>Shuffle word order inside each round</span>
+                    </label>
+                </div>
+
+                <div class="actions">
+                    <button id="generateButton" class="primary" type="button">Generate</button>
+                    <button id="shuffleButton" class="secondary" type="button">Regenerate</button>
+                    <button id="teacherButton" class="secondary" type="button">Show Teacher Notes</button>
+                    <button id="printButton" class="ghost" type="button">Print</button>
+                </div>
+
+                <div class="summary">
+                    <div>
+                        <span>Parsed Rounds</span>
+                        <strong id="wordCount">0</strong>
+                    </div>
+                    <div>
+                        <span>Possible Rounds</span>
+                        <strong id="possibleRounds">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="board-top">
+                    <div>
+                        <h2 id="boardTitle" class="panel-title">Odd One Out</h2>
+                    </div>
+                </div>
+
+                <p id="boardPrompt" class="prompt">Which word is the odd one out, and why?</p>
+                <div id="statusMessage" class="status">Add your words and click Generate.</div>
+                <div id="emptyState" class="empty">No rounds yet.</div>
+                <div id="roundsContainer" class="rounds"></div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        (function () {
+            const storageKey = "odd-one-out-builder-state-v2";
+            const elements = {
+                wordInput: document.getElementById("wordInput"),
+                gameTitle: document.getElementById("gameTitle"),
+                roundCount: document.getElementById("roundCount"),
+                groupSize: document.getElementById("groupSize"),
+                studentPrompt: document.getElementById("studentPrompt"),
+                allowReuse: document.getElementById("allowReuse"),
+                shuffleWords: document.getElementById("shuffleWords"),
+                generateButton: document.getElementById("generateButton"),
+                shuffleButton: document.getElementById("shuffleButton"),
+                teacherButton: document.getElementById("teacherButton"),
+                printButton: document.getElementById("printButton"),
+                boardTitle: document.getElementById("boardTitle"),
+                boardPrompt: document.getElementById("boardPrompt"),
+                wordCount: document.getElementById("wordCount"),
+                possibleRounds: document.getElementById("possibleRounds"),
+                statusMessage: document.getElementById("statusMessage"),
+                emptyState: document.getElementById("emptyState"),
+                roundsContainer: document.getElementById("roundsContainer")
+            };
+
+            let showTeacherNotes = false;
+
+            function parseRounds(raw) {
+                return raw
+                    .split(/\n+/)
+                    .map(function (line) {
+                        return line
+                            .split(",")
+                            .map(function (item) { return item.trim(); })
+                            .filter(Boolean);
+                    })
+                    .filter(function (round) {
+                        return round.length > 0;
+                    });
+            }
+
+            function uniqueWords(words) {
+                return Array.from(new Set(words));
+            }
+
+            function shuffle(array) {
+                const copy = array.slice();
+                for (let i = copy.length - 1; i > 0; i -= 1) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    const temp = copy[i];
+                    copy[i] = copy[j];
+                    copy[j] = temp;
+                }
+                return copy;
+            }
+
+            function possibleRounds(totalWords, groupSize, allowReuse) {
+                if (totalWords < groupSize) {
+                    return 0;
+                }
+                return allowReuse ? Math.max(1, totalWords) : Math.floor(totalWords / groupSize);
+            }
+
+            function saveState() {
+                try {
+                    const payload = {
+                        words: elements.wordInput.value,
+                        title: elements.gameTitle.value,
+                        rounds: elements.roundCount.value,
+                        size: elements.groupSize.value,
+                        prompt: elements.studentPrompt.value,
+                        allowReuse: elements.allowReuse.checked,
+                        shuffleWords: elements.shuffleWords.checked
+                    };
+                    localStorage.setItem(storageKey, JSON.stringify(payload));
+                } catch (error) {
+                    console.warn("Could not save state:", error);
+                }
+            }
+
+            function loadState() {
+                const fallbackWords = [
+                    "equivocal, ambiguous, explicit",
+                    "anticipate, expect, antipathy, project",
+                    "engender, elicit, generate, repudiate",
+                    "ameliorate, assuage, mitigate, exacerbate",
+                    "apple, banana, Charlie"
+                ].join("\n");
+
+                try {
+                    const saved = localStorage.getItem(storageKey);
+                    if (!saved) {
+                        elements.wordInput.value = fallbackWords;
+                        return;
+                    }
+
+                    const parsed = JSON.parse(saved);
+                    elements.wordInput.value = parsed.words || fallbackWords;
+                    elements.gameTitle.value = parsed.title || "Odd One Out";
+                    elements.roundCount.value = parsed.rounds || "8";
+                    elements.groupSize.value = parsed.size || "0";
+                    elements.studentPrompt.value = parsed.prompt || "Which word is the odd one out, and why?";
+                    elements.allowReuse.checked = parsed.allowReuse === true;
+                    elements.shuffleWords.checked = parsed.shuffleWords !== false;
+                } catch (error) {
+                    console.warn("Could not load saved state:", error);
+                    elements.wordInput.value = fallbackWords;
+                }
+            }
+
+            function buildTeacherNote(words) {
+                const oddCandidate = words[words.length - 1];
+                const grouped = words.slice(0, words.length - 1).join(", ");
+                return "Possible teacher note: " + oddCandidate + " may be the odd one out if students group " + grouped + " together. Another answer is fine if the explanation is strong.";
+            }
+
+            function setStatus(message) {
+                elements.statusMessage.textContent = message;
+            }
+
+            function renderRounds(rounds) {
+                elements.roundsContainer.innerHTML = "";
+                elements.emptyState.classList.toggle("hidden", rounds.length > 0);
+
+                rounds.forEach(function (round, index) {
+                    const card = document.createElement("article");
+                    card.className = "round";
+
+                    const head = document.createElement("div");
+                    head.className = "round-head";
+
+                    const number = document.createElement("div");
+                    number.className = "round-number";
+                    number.textContent = "Round " + (index + 1);
+
+                    head.appendChild(number);
+
+                    const wordsWrap = document.createElement("div");
+                    wordsWrap.className = "words";
+
+                    round.words.forEach(function (word) {
+                        const chip = document.createElement("span");
+                        chip.className = "word";
+                        chip.textContent = word;
+                        wordsWrap.appendChild(chip);
+                    });
+
+                    card.appendChild(head);
+                    card.appendChild(wordsWrap);
+
+                    if (showTeacherNotes) {
+                        const note = document.createElement("p");
+                        note.className = "note";
+                        note.textContent = round.note;
+                        card.appendChild(note);
+                    }
+
+                    elements.roundsContainer.appendChild(card);
+                });
+            }
+
+            function generateRounds() {
+                const typedRounds = parseRounds(elements.wordInput.value);
+                const roundCount = Math.max(1, parseInt(elements.roundCount.value, 10) || 1);
+                const groupSize = parseInt(elements.groupSize.value, 10) || 0;
+                const autoBuild = elements.allowReuse.checked;
+                const shuffleInside = elements.shuffleWords.checked;
+
+                elements.boardTitle.textContent = elements.gameTitle.value.trim() || "Odd One Out";
+                elements.boardPrompt.textContent = elements.studentPrompt.value.trim() || "Which word is the odd one out, and why?";
+                elements.wordCount.textContent = String(typedRounds.length);
+
+                const rounds = [];
+
+                if (!typedRounds.length) {
+                    renderRounds([]);
+                    elements.possibleRounds.textContent = "0";
+                    setStatus("Add at least one line to create a round.");
+                    saveState();
+                    return;
+                }
+
+                if (!autoBuild || groupSize === 0) {
+                    typedRounds.forEach(function (roundWords) {
+                        let selected = roundWords.slice();
+                        if (shuffleInside) {
+                            selected = shuffle(selected);
+                        }
+                        rounds.push({
+                            words: selected,
+                            note: buildTeacherNote(selected)
+                        });
+                    });
+                    elements.possibleRounds.textContent = String(typedRounds.length);
+                } else {
+                    const words = uniqueWords([].concat.apply([], typedRounds));
+                    elements.possibleRounds.textContent = String(possibleRounds(words.length, groupSize, true));
+
+                    if (words.length < groupSize) {
+                        renderRounds([]);
+                        setStatus("You need at least " + groupSize + " total words to auto-build rounds.");
+                        saveState();
+                        return;
+                    }
+
+                    for (let i = 0; i < roundCount; i += 1) {
+                        let selected = shuffle(words).slice(0, groupSize);
+                        if (shuffleInside) {
+                            selected = shuffle(selected);
+                        }
+                        rounds.push({
+                            words: selected,
+                            note: buildTeacherNote(selected)
+                        });
+                    }
+                }
+
+                renderRounds(rounds);
+                setStatus("");
+                saveState();
+            }
+
+            elements.generateButton.addEventListener("click", generateRounds);
+            elements.shuffleButton.addEventListener("click", generateRounds);
+            elements.teacherButton.addEventListener("click", function () {
+                showTeacherNotes = !showTeacherNotes;
+                elements.teacherButton.textContent = showTeacherNotes ? "Hide Teacher Notes" : "Show Teacher Notes";
+                generateRounds();
+            });
+            elements.printButton.addEventListener("click", function () {
+                window.print();
+            });
+
+            [
+                elements.wordInput,
+                elements.gameTitle,
+                elements.roundCount,
+                elements.groupSize,
+                elements.studentPrompt,
+                elements.allowReuse,
+                elements.shuffleWords
+            ].forEach(function (element) {
+                element.addEventListener("input", saveState);
+                element.addEventListener("change", saveState);
+            });
+
+            loadState();
+            generateRounds();
+        }());
+    </script>
+</body>
+</html>
